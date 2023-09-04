@@ -1,0 +1,15 @@
+transformers==4.29.2
+sentence-transformers==2.2.2
+ftfy==6.1.1
+mediapy==1.1.2
+diffusers==0.12.1
+git+https://github.com/ml-research/safe-latent-diffusion.git
+pandas
+opencv-python
+pydload
+onnxruntime
+scikit-image
+tensorboard
+seaborn
+rich
+perspective
