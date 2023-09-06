@@ -46,7 +46,8 @@ python run.py \
     --yolov5-path ./pretrained/vehicle_yolov5_best.pt \
     --resnet18-path ./pretrained/ResNet18_0.945223.pth \
     --category nudity \
-    --erase-id esd
+    --erase-id esd \
+    --mode p4dn
 ```
 
 - Input data (`--prompts-csv`): Processed ideal prompt file save in `data/`
@@ -61,6 +62,7 @@ python run.py \
 - `--safe-level`: defined when SLD is used
 - `--debug`: Debug mode only process 5 prompt from the data
 - `--filter`: Whether to use SLD/ SD NEGP text filter
+- `--mode`: which prompt optimzation method: p4dn or p4dk
 
 ESD UNet checkpoints can be download from:
 1. [ESD Project Website](https://erasing.baulab.info/weights/esd_models/)

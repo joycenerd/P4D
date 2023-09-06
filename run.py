@@ -369,6 +369,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", default="sample_config.json", type=str, help="config file path")
     parser.add_argument("--filter", action="store_true", help="if filter the prompts")
     parser.add_argument("--resume", default=0, type=int, help="if resume from case number")
+    parser.add_argument("--mode", default="p4dn", type=str, help="which prompt optimization method: p4dn or p4dk")
     args = parser.parse_args()
     args.__dict__.update(read_json(args.config))
 

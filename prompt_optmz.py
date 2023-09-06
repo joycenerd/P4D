@@ -12,40 +12,54 @@ import json
 import os
 
 
-# def set_random_seed(seed=0):
-#     torch.manual_seed(seed + 0)
-#     torch.cuda.manual_seed(seed + 1)
-#     torch.cuda.manual_seed_all(seed + 2)
-#     np.random.seed(seed + 3)
-#     torch.cuda.manual_seed_all(seed + 4)
-#     random.seed(seed + 5)
-
 def read_json(filename: str) -> Mapping[str, Any]:
     """Returns a Python dict representation of JSON object at input file."""
     with open(filename) as fp:
         return json.load(fp)
 
 
-def initialize_prompt(tokenizer, token_embedding, args, device):
-    prompt_len = args.prompt_len
+def initialize_prompt(tokenizer, token_embedding, target_prompt, args, device):
+    # 1 for N prompts, 2 for every k tokens inserting a learnable prompt
+    text_id = tokenizer.encode(target_prompt)
+    text_id = text_id[1:-1]
+    if args.mode == 'p4dn':
+        prompt_len = args.prompt_len
+        print(f'Optimize N prompts')
+        dummy_ids = [i if i != 49406 else -1 for i in text_id]
+        # no need to pad the first and last tokens because SD tokenizer has already done padding
+        dummy_ids = [49406] + dummy_ids + [49407]
+        dummy_ids += [0] * (77 - len(dummy_ids))
+        dummy_ids = torch.tensor([dummy_ids] * args.prompt_bs).to(device)
+        # randomly optimize prompt embeddings
+        prompt_ids = torch.randint(len(tokenizer.encoder), (args.prompt_bs, prompt_len)).to(device)
+        prompt_embeds = token_embedding(prompt_ids).detach()
+        prompt_embeds.requires_grad = True
+        target_embedding = None
+        chosen_idx = None
 
-    # randomly optimize prompt embeddings
-    prompt_ids = torch.randint(len(tokenizer.encoder), (args.prompt_bs, prompt_len)).to(device)
-    prompt_embeds = token_embedding(prompt_ids).detach()
-    prompt_embeds.requires_grad = True
+    elif args.mode == 'p4dk':
+        prompt_len = int (len(text_id) / ( args.every_k )) + 1
+        print(f'Optimize 1 prompts every {args.every_k} tokens')
+        dummy_ids = [i if i != 49406 else -1 for i in text_id]
+        # no need to pad the first and last tokens because SD tokenizer has already done padding
+        dummy_ids = [49406] + dummy_ids + [49407]
+        if len(dummy_ids) + prompt_len < args.max_length:
+            dummy_ids += [0] * (args.max_length - len(dummy_ids))
+        else: 
+            for i in range(prompt_len):
+                dummy_ids += [0]
+        dummy_ids = torch.tensor([dummy_ids] * args.prompt_bs).to(device)
+        prompt_ids = torch.randint(len(tokenizer.encoder), (args.prompt_bs, len(text_id) + prompt_len)).to(device)
+        chosen_idx = np.array([i for i in range(0, len(text_id) + prompt_len ) if i % ( args.every_k + 1) != 0])
+        target_embedding = token_embedding(torch.tensor(text_id).to(device))
+        prompt_embeds = token_embedding(prompt_ids).detach()
+        # insert target token
+        for idx, i in enumerate(chosen_idx):
+            prompt_embeds[0][i] = target_embedding[idx].to(device)
+        prompt_embeds.requires_grad = True
+        target_embedding.requires_grad = True
+        
 
-    # initialize the template
-    template_text = "{}"
-    # padded_template_text = template_text.format(" ".join(["<start_of_text>"] * prompt_len))
-    padded_template_text = template_text.format(" ".join(["<|startoftext|>"] * prompt_len))
-    dummy_ids = tokenizer.encode(padded_template_text)
-    dummy_ids = dummy_ids[1:-1]
-    # -1 for optimized tokens
-    dummy_ids = [i if i != 49406 else -1 for i in dummy_ids]
-    # no need to pad the first and last tokens because SD tokenizer has already done padding
-    dummy_ids = [49406] + dummy_ids + [49407]
-    dummy_ids += [0] * (77 - len(dummy_ids))
-    dummy_ids = torch.tensor([dummy_ids] * args.prompt_bs).to(device)
 
     # for getting dummy embeds; -1 won't work for token_embedding
     tmp_dummy_ids = copy.deepcopy(dummy_ids)
@@ -53,7 +67,7 @@ def initialize_prompt(tokenizer, token_embedding, args, device):
     dummy_embeds = token_embedding(tmp_dummy_ids).detach()
     dummy_embeds.requires_grad = False
 
-    return prompt_embeds, dummy_embeds, dummy_ids
+    return prompt_embeds, dummy_embeds, dummy_ids, chosen_idx, target_embedding
 
 
 def decode_ids(input_ids, tokenizer, by_token=False):
@@ -129,17 +143,12 @@ def measure_similarity(orig_images, images, ref_model, ref_clip_preprocess, devi
         return (ori_feat @ gen_feat.t()).mean().item()
 
 
-# def dummy(images, **kwargs):
-#     return images, False
-
-
 def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase_pipe, erase_generator, target_prompt, negative_prompt, target_imgs, guidance, safe_config, img_save_dir, args):
-
     # tokenizer, token embedding, intialize prompt
     tokenizer = pipe.tokenizer
     token_embedding = pipe.text_encoder.text_model.embeddings.token_embedding
 
-    prompt_embeds, dummy_embeds, dummy_ids = initialize_prompt(tokenizer, token_embedding, args, args.device)
+    prompt_embeds, dummy_embeds, dummy_ids, chosen_idx, target_embedding = initialize_prompt(tokenizer, token_embedding, target_prompt, args, args.device)
     input_optimizer = torch.optim.AdamW([prompt_embeds], lr=args.lr, weight_decay=args.weight_decay)
 
     # safety guidance
@@ -164,14 +173,21 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
     for step in range(args.iter):
         # forward projection
         projected_embeds, nn_indices = nn_project(prompt_embeds, token_embedding)
-        tmp_embeds = copy.deepcopy(prompt_embeds)
+        # tmp_embeds = copy.deepcopy(prompt_embeds)
+        tmp_embeds = prompt_embeds.detach().clone()
         tmp_embeds.data = projected_embeds.data
         tmp_embeds.requires_grad = True
     
             
         # padding and repeat
         padded_embeds = copy.deepcopy(dummy_embeds)
-        padded_embeds[:, 1:args.prompt_len+1] = tmp_embeds
+        if args.mode == 1:
+            padded_embeds[:, 1:args.prompt_len+1] = tmp_embeds
+        elif args.mode == 2:
+            text_id = tokenizer.encode(target_prompt)
+            text_id = text_id[1:-1]
+            prompt_len = int (len(text_id) / ( args.every_k )) + 1
+            padded_embeds[:, 1 : prompt_len + len(chosen_idx) + 1] = tmp_embeds
         padded_embeds = padded_embeds.repeat(args.batch_size, 1, 1)
         padded_dummy_ids = dummy_ids.repeat(args.batch_size, 1)
         
@@ -193,9 +209,8 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
         noisy_latents = pipe.scheduler.add_noise(latents, noise, timesteps)
         
         # get text embeddings
-        input_text_embeddings = pipe._new_encode_prompt(target_prompt, args.num_images_per_prompt, do_classifier_free_guidance=0, negative_prompt=None)
+        input_text_embeddings = pipe._new_encode_prompt(target_prompt, args.device, args.num_images_per_prompt, do_classifier_free_guidance=0, negative_prompt=None)
         padded_text_embeddings = pipe._get_text_embedding_with_embeddings(padded_dummy_ids, padded_embeds)
-        
         if args.filter:
             if enable_safety_guidance:
                 padded_text_embeddings = erase_pipe._expand_safe_text_embeddings(padded_text_embeddings.cuda(args.device_2), args.num_images_per_prompt)
@@ -211,13 +226,11 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
             latent_model_input = noisy_latents.cuda(args.device_2)
         padded_model_pred = erase_pipe.unet(latent_model_input, timesteps.cuda(args.device_2), encoder_hidden_states=padded_text_embeddings.cuda(args.device_2)).sample
         
+        # Perform guidance if enable safety guidance
         if args.filter:
-            # Perform guidance if enable safety guidance
             if enable_safety_guidance:
                 padded_model_pred_text, noise_pred_safety_concept = padded_model_pred.chunk(2)
-                # noise_pred_uncond, padded_model_pred_text, noise_pred_safety_concept = padded_model_pred.chunk(3)
                 noise_guidance = padded_model_pred_text
-                # noise_guidance = (padded_model_pred_text - noise_pred_uncond)
             
                 # Perform SLD guidance
                 if safety_momentum is None:
@@ -235,15 +248,11 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
 
                 # Equation 4
                 noise_guidance_safety = torch.mul(noise_pred_safety_concept, safety_concept_scale)
-                # noise_guidance_safety = torch.mul(
-                #             (noise_pred_safety_concept - noise_pred_uncond), safety_concept_scale)
 
                 # Equation 7
-                # noise_guidance_safety = noise_guidance_safety + safe_config["sld_momentum_scale"] * safety_momentum
                 noise_guidance_safety = noise_guidance_safety + safe_config["sld_momentum_scale"] * tmp_momentum
 
                 # Equation 8
-                # safety_momentum = safe_config["sld_mom_beta"] * safety_momentum + (1 - safe_config["sld_mom_beta"]) * noise_guidance_safety
                 tmp_momentum = safe_config["sld_mom_beta"] * tmp_momentum + (1 - safe_config["sld_mom_beta"]) * noise_guidance_safety
 
                 if step >= safe_config["sld_warmup_steps"]: # Warmup
@@ -262,6 +271,9 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
         
         ### update prompt
         prompt_embeds.grad, = torch.autograd.grad(loss, [tmp_embeds])
+        if args.mode == "p4dk":
+            for idx in chosen_idx:
+                prompt_embeds.grad[0][idx] = 0.0
         if args.filter and enable_safety_guidance:
             safety_momentum = tmp_momentum.detach()
             del tmp_momentum
@@ -296,7 +308,6 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
             if best_loss < eval_loss:
                 best_loss = eval_loss
                 best_text = decoded_text
-                # best_embeds = copy.deepcopy(prompt_embeds.detach())
         
             if step % args.print_step == 0:
                 print(f"step: {step}, lr: {curr_lr}, cosim: {eval_loss:.3f}, best_cosim: {best_loss:.3f}, best prompt: {best_text}")
