@@ -181,9 +181,9 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
             
         # padding and repeat
         padded_embeds = copy.deepcopy(dummy_embeds)
-        if args.mode == 1:
+        if args.mode == "p4dn":
             padded_embeds[:, 1:args.prompt_len+1] = tmp_embeds
-        elif args.mode == 2:
+        elif args.mode == "p4dk":
             text_id = tokenizer.encode(target_prompt)
             text_id = text_id[1:-1]
             prompt_len = int (len(text_id) / ( args.every_k )) + 1
