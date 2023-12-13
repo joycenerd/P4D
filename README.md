@@ -1,6 +1,15 @@
 # Prompting4Debugging: Red-Teaming Text-to-Image Diffusion Models by Finding Problematic Prompts
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-g.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![arXiv](https://img.shields.io/badge/arXiv-2309.06135-b31b1b.svg?style=flat-square)](https://arxiv.org/abs/2309.06135)
+[![LLaMA](https://img.shields.io/badge/Project_Page-P4D-FFB000.svg?style=flat-square)](https://joycenerd.github.io/prompting4debugging/)
+
+
 Official Implementation of the paper Prompting4Debugging: Red-Teaming Text-to-Image Diffusion Models by Finding Problematic Prompts
+
+Paper: https://arxiv.org/abs/2309.06135 \
+Authors: [Zhi-Yi Chin](https://joycenerd.github.io/) $^{\dagger*}$, Chieh-Ming Jiang $^{\dagger*}$, [Ching-Chun Huang](http://acm.cs.nctu.edu.tw/) $^\dagger$, [Pin-Yu Chen](https://sites.google.com/site/pinyuchenpage) $^\ddagger$, [Wei-Chen Chiu](https://walonchiu.github.io/) $^\dagger$ (*equal contribution) \
+$^\dagger$ National Yang Ming Chiao Tung University, $\ddagger$ IBM Research
 
 ![](figure/teaser.png)
 
@@ -68,4 +77,29 @@ ESD UNet checkpoints can be download from:
 1. [ESD Project Website](https://erasing.baulab.info/weights/esd_models/)
 2. [ESD Hugging Face Space](https://huggingface.co/spaces/baulab/Erasing-Concepts-In-Diffusion/tree/main/models)
 
-The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --yolov5-path, --resnet18-path`) can be found in `pretrained/`
+The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --yolov5-path, --resnet18-path`) can be found in [this Google Drive link](https://drive.google.com/drive/folders/1u8rb7ABCwA0Ns59hlM3VxGwE8S0iuGI5?usp=drive_link)
+
+## Quantitative Results
+
+![](figure/quantitative.png)
+
+## Qualitative
+
+Please refer to our [project page](https://joycenerd.github.io/prompting4debugging/) for qualitative results.
+
+## Citation
+[![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-green?color=FF8000?color=009922)](https://doi.org/10.48550/arXiv.2309.12757)
+
+Please cite our paper and star this repository if it's helpful to your work!
+
+```
+@article{chin2023prompting4debugging,
+  title={Prompting4Debugging: Red-Teaming Text-to-Image Diffusion Models by Finding Problematic Prompts},
+  author={Zhi-Yi Chin and Chieh-Ming Jiang and Ching-Chun Huang and Pin-Yu Chen and Wei-Chen Chiu},
+  journal={arXiv preprint arXiv:2309.06135},
+  year={2023}
+}
+```
+
+## Contact
+If you have any problems with the code or have question, please open an issue or send an email to [joycenerd.cs09@nycu.edu.tw](mailto:joycenerd.cs09@nycu.edu.tw)
