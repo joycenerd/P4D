@@ -88,7 +88,7 @@ The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --
 Please refer to our [project page](https://joycenerd.github.io/prompting4debugging/) for qualitative results.
 
 ## Citation
-[![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-green?color=FF8000?color=009922)](https://doi.org/10.48550/arXiv.2309.12757)
+[![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-green?color=FF8000?color=009922)](https://doi.org/10.48550/arXiv.2309.06135)
 
 Please cite our paper and star this repository if it's helpful to your work!
 
