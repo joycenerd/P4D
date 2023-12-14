@@ -87,6 +87,12 @@ The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --
 
 Please refer to our [project page](https://joycenerd.github.io/prompting4debugging/) for qualitative results.
 
+## Acknowledgement
+- PEZ: https://github.com/YuxinWenRick/hard-prompts-made-easy
+- Nudenet: https://github.com/notAI-tech/NudeNet
+- ESD: https://erasing.baulab.info/
+- SLD: https://github.com/ml-research/safe-latent-diffusion
+
 ## Citation
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-green?color=FF8000?color=009922)](https://doi.org/10.48550/arXiv.2309.06135)
 
@@ -100,12 +106,6 @@ Please cite our paper and star this repository if it's helpful to your work!
   year={2023}
 }
 ```
-
-## Acknowledgement
-- PEZ: https://github.com/YuxinWenRick/hard-prompts-made-easy
-- Nudenet: https://github.com/notAI-tech/NudeNet
-- ESD: https://erasing.baulab.info/
-- SLD: https://github.com/ml-research/safe-latent-diffusion
 
 ## Contact
 If you have any problems with the code or have question, please open an issue or send an email to [joycenerd.cs09@nycu.edu.tw](mailto:joycenerd.cs09@nycu.edu.tw)
