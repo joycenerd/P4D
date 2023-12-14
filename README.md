@@ -101,5 +101,11 @@ Please cite our paper and star this repository if it's helpful to your work!
 }
 ```
 
+## Acknowledgement
+- PEZ: https://github.com/YuxinWenRick/hard-prompts-made-easy
+- Nudenet: https://github.com/notAI-tech/NudeNet
+- ESD: https://erasing.baulab.info/
+- SLD: https://github.com/ml-research/safe-latent-diffusion
+
 ## Contact
 If you have any problems with the code or have question, please open an issue or send an email to [joycenerd.cs09@nycu.edu.tw](mailto:joycenerd.cs09@nycu.edu.tw)
