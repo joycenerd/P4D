@@ -209,7 +209,7 @@ def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase
         noisy_latents = pipe.scheduler.add_noise(latents, noise, timesteps)
         
         # get text embeddings
-        input_text_embeddings = pipe._new_encode_prompt(target_prompt, args.device, args.num_images_per_prompt, do_classifier_free_guidance=0, negative_prompt=None)
+        input_text_embeddings = pipe._new_encode_prompt(target_prompt, args.num_images_per_prompt, do_classifier_free_guidance=0, negative_prompt=None)
         padded_text_embeddings = pipe._get_text_embedding_with_embeddings(padded_dummy_ids, padded_embeds)
         if args.filter:
             if enable_safety_guidance:
