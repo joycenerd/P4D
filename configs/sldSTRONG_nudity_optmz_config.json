@@ -16,8 +16,6 @@
     "model_id": "CompVis/stable-diffusion-v1-4",
     "save_dir": "./results/sldSTRONG_nudity_train",
     "erase_concept_checkpoint": null,
-    "device": "cuda:1",
-    "device_2": "cuda:3",
     "clip_model": "ViT-H-14",
     "clip_pretrain": "laion2b_s32b_b79k",
     "target_prompts": null,

@@ -42,38 +42,37 @@ python process_data.py \
 - Input (`--prompts-csv`): original prompt dataset, refer to CSV files in `data/` for format
 - Output (`--save-prompts`): processed ideal prompts for debugging
 - `erase-id`: esd, sld or sd
-- `--category`: nudity, all, car, french_horn
+- `--category`: nudity -> ask us for more categories
 - `--safe-level`: only defined if you use sld -> MAX, STRONG, MEDIUM, WEAK
 
 ## Prompt Optimization
 
+### P4D-$N$
 ```bash
-python run.py \
+python run_p4dn.py \
     --config ./configs/esd_nudity_optmz_config.json \
-    --prompts-csv ./data/unsafe-prompts-nudity_esd.csv \
+    --data ./data/unsafe-prompts-nudity_esd.csv \
     --save-prompts ./esd_nudity_optmz.csv \
     --nudenet-path ./pretrained/nudenet_classifier_model.onnx \
-    --q16-prompts-path ./pretrained/Q16_pompts.p \
-    --yolov5-path ./pretrained/vehicle_yolov5_best.pt \
-    --resnet18-path ./pretrained/ResNet18_0.945223.pth \
     --category nudity \
     --erase-id esd \
-    --mode p4dn
+    --device cuda:x \
+    --device-2 cuda:y
 ```
 
-- Input data (`--prompts-csv`): Processed ideal prompt file save in `data/`
+- Input data (`--data`): Processed ideal prompt file save in `data/`
 - Output results (`--save-prompts`): Output optimize prompts to a csv file
 - Config file (`--config`) : Training configuration save in `configs/`
     - `prompt_len`: number of tokens to optimize, default set to 16
     - `model_id`: which version of stable diffusion, all the model use 1.4 except SD with negative prompt use 2.0
     - `erase_concept_checkpoint`: ESD safe UNet checkpoint path, defined if ESD is used
-    - `device`: main training GPU device, `cuda:[NUM]`
-    - `device_2`: Secondary GPU device, safe SD is on this device
     - `negative_prompts`: negative prompt in text format, defined when SD with negative prompt is used
+    - `save_dir`: resulting generated images and log saving directory from the optimization process
+- `--device`: main training GPU device, `cuda:[NUM]`
+- `--device-2`: Secondary GPU device, safe SD is on this device
 - `--safe-level`: defined when SLD is used
+- **`--filter`: Whether to use SLD/ SD NEGP text filter when opotmizing prompts**
 - `--debug`: Debug mode only process 5 prompt from the data
-- `--filter`: Whether to use SLD/ SD NEGP text filter
-- `--mode`: which prompt optimzation method: p4dn or p4dk
 
 ESD UNet checkpoints can be download from:
 1. [ESD Project Website](https://erasing.baulab.info/weights/esd_models/)
@@ -105,6 +104,10 @@ Please refer to our [project page](https://joycenerd.github.io/prompting4debuggi
 - Nudenet: https://github.com/notAI-tech/NudeNet
 - ESD: https://erasing.baulab.info/
 - SLD: https://github.com/ml-research/safe-latent-diffusion
+
+## TODO
+- [x] P4D-$N$ code
+- [ ] P4D-$K$ code
 
 ## Citation
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-EE4C2C.svg?style=flat-square)](https://doi.org/10.48550/arXiv.2309.06135)
