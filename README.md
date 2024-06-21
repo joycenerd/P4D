@@ -47,7 +47,7 @@ python process_data.py \
 
 ## Prompt Optimization
 
-### P4D-$N$
+### P4D-N
 ```bash
 python run_p4dn.py \
     --config ./configs/esd_nudity_optmz_config.json \
@@ -91,8 +91,8 @@ The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --
 | [Text-Inv](https://arxiv.org/abs/2208.01618) |   11.91%   |   13.73%   |   35.71%   |    8.13%   |
 | [PEZ-Orig](https://arxiv.org/abs/2302.03668) |   12.47%   |   24.51%   |   28.57%   |   20.57%   |
 | [PEZ-PInv](https://arxiv.org/abs/2302.03668) |   26.59%   |   22.06%   |   22.32%   |   12.44%   |
-| OURS (P4D-$N$)                               |   54.29%   |   27.94%   |   34.82%   |   27.75%   |
-| OURS (P4D-$K$)                               |   49.58%   |   42.16%   |   38.39%   |   21.53%   |
+| OURS (P4D-N)                               |   54.29%   |   27.94%   |   34.82%   |   27.75%   |
+| OURS (P4D-K)                               |   49.58%   |   42.16%   |   38.39%   |   21.53%   |
 | OURS (P4D-UNION)                             | **70.36%** | **57.35%** | **56.25%** | **44.02%** |
 
 ## Qualitative
@@ -106,8 +106,8 @@ Please refer to our [project page](https://joycenerd.github.io/prompting4debuggi
 - SLD: https://github.com/ml-research/safe-latent-diffusion
 
 ## TODO
-- [x] P4D-$N$ code
-- [ ] P4D-$K$ code
+- [x] P4D-N code
+- [ ] P4D-K code
 
 ## Citation
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-EE4C2C.svg?style=flat-square)](https://doi.org/10.48550/arXiv.2309.06135)
