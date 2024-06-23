@@ -119,7 +119,7 @@ def measure_similarity(orig_images, images, ref_model, ref_clip_preprocess, devi
         return (ori_feat @ gen_feat.t()).mean().item()
 
 
-def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase_pipe, erase_generator, target_prompt, negative_prompt, target_imgs, guidance, safe_config, img_save_dir, args):
+def optimize(clip_model, clip_preprocess, img_preprocess, pipe, generator, erase_pipe, erase_generator, target_prompt, negative_prompt, target_imgs, guidance, safe_config, args):
 
     # tokenizer, token embedding, intialize prompt
     tokenizer = pipe.tokenizer

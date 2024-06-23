@@ -1,5 +1,7 @@
 {
     "prompt_len": 16,
+    "every_k": 3,
+    "max_length": 77,
     "iter": 3000,
     "eval_step": 50,
     "seed": null,

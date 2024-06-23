@@ -60,6 +60,19 @@ python run_p4dn.py \
     --device-2 cuda:y
 ```
 
+### P4D-K
+```bash
+python run_p4dk.py \
+    --config ./configs/esd_nudity_optmz_config.json \
+    --data ./data/unsafe-prompts-nudity_esd.csv \
+    --save-prompts ./esd_nudity_optmz.csv \
+    --nudenet-path ./pretrained/nudenet_classifier_model.onnx \
+    --category nudity \
+    --erase-id esd \
+    --device cuda:x \
+    --device-2 cuda:y
+```
+
 - Input data (`--data`): Processed ideal prompt file save in `data/`
 - Output results (`--save-prompts`): Output optimize prompts to a csv file
 - Config file (`--config`) : Training configuration save in `configs/`
@@ -107,7 +120,8 @@ Please refer to our [project page](https://joycenerd.github.io/prompting4debuggi
 
 ## TODO
 - [x] P4D-N code
-- [ ] P4D-K code
+- [x] P4D-K code
+- [ ] Update Project Page
 
 ## Citation
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-EE4C2C.svg?style=flat-square)](https://doi.org/10.48550/arXiv.2309.06135)

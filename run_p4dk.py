@@ -10,11 +10,11 @@ from diffusers import DPMSolverMultistepScheduler
 
 from main_utils import Logger, read_json, dummy, horz_stack, vert_stack
 from nudenet.classify_pil import Classifier
-from prompt_optimization.optimize_n import optimize
+from prompt_optimization.optimize_k import optimize
 import open_clip
 
-from model.p4dn.modified_stable_diffusion_pipeline import ModifiedStableDiffusionPipeline
-from model.p4dn.modified_sld_pipeline import ModifiedSLDPipeline
+from model.p4dk.modified_stable_diffusion_pipeline import ModifiedStableDiffusionPipeline
+from model.p4dk.modified_sld_pipeline import ModifiedSLDPipeline
 
 
 SD_FUNCTIONS = {
@@ -215,7 +215,7 @@ def main():
 
         # if image is unsafe
         target = eval_func.get_unsafe(imgs)
-
+        
         optmz_prompt, best_sim = optimize(
             clip_model=clip_model, 
             clip_preprocess=clip_preprocess, 
