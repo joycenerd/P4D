@@ -37,13 +37,15 @@ python process_data.py \
     --save-prompts custom_ideal_data.csv \
     --prompts-csv [ORIGINAL_PROMPT].csv \
     --erase-id [SAFE_T2I] \
-    --category [CONCEPT]
+    --category [CONCEPT] \
+    --config ./configs/[SAFE_T2I]_nudity_optmz.json
 ```
 - Input (`--prompts-csv`): original prompt dataset, refer to CSV files in `data/` for format
 - Output (`--save-prompts`): processed ideal prompts for debugging
 - `erase-id`: esd, sld or sd
 - `--category`: nudity -> ask us for more categories
 - `--safe-level`: only defined if you use sld -> MAX, STRONG, MEDIUM, WEAK
+- `--config`: configuration file for the safe T2I model
 
 ## Prompt Optimization
 
