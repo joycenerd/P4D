@@ -267,7 +267,8 @@ if __name__ == "__main__":
     parser.add_argument("--yolov5-path", default="/eva_data0/evil-prompt/pretrained/vehicle_yolov5_best.pt", type=str, help="yolov5 vehicle det checkpoint path")
     parser.add_argument("--safe-level", default="MAX", type=str, help="safe level of SLD")
     parser.add_argument("--resnet18-path", default="/eva_data0/evil-prompt/pretrained/ResNet18 0.945223.pth", type=str, help="resnet18 imagenette classifier checkpoint path")
+    parser.add_argument("--config", default="sample_config.json", type=str, help="config file path")
     args = parser.parse_args()
-    args.__dict__.update(read_json("sample_config.json"))
+    args.__dict__.update(read_json(args.config))
 
     main()
