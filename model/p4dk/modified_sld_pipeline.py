@@ -144,7 +144,7 @@ class ModifiedSLDPipeline(SLDPipeline):
         return text_embeddings
 
 
-    def _new_encode_prompt(self, prompt, num_images_per_prompt, do_classifier_free_guidance, negative_prompt, enable_safety_guidance, prompt_ids=None, prompt_embeddings=None):
+    def _new_encode_prompt(self, prompt, num_images_per_prompt, do_classifier_free_guidance, negative_prompt, enable_safety_guidance=True, prompt_ids=None, prompt_embeddings=None):
         r"""
         Encodes the prompt into text encoder hidden states.
         Args:
