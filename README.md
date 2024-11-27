@@ -95,6 +95,9 @@ ESD UNet checkpoints can be download from:
 
 The pretrained concept evaluation model (`--nudenet-path, --q16-prompts-path, --yolov5-path, --resnet18-path`) can be found in [this Google Drive link](https://drive.google.com/drive/folders/1u8rb7ABCwA0Ns59hlM3VxGwE8S0iuGI5?usp=drive_link)
 
+## Adaptation
+If you want to adapt our P4D to other concepts besides nudity or inspecting safe T2I models besides (ESD, SLD and SD-NEGP), please take a look at [GUIDES.md](./GUIDES.md)
+
 ## Quantitative Results
 
 ### Main Results (concept and obejct)
@@ -123,7 +126,7 @@ Please refer to our [project page](https://joycenerd.github.io/prompting4debuggi
 ## TODO
 - [x] P4D-N code
 - [x] P4D-K code
-- [ ] Update Project Page
+- [x] Update Project Page
 
 ## Citation
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2309.06135-EE4C2C.svg?style=flat-square)](https://doi.org/10.48550/arXiv.2309.06135)
